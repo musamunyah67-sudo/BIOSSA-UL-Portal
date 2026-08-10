@@ -1,0 +1,18 @@
+{
+  "buildCommand": null,
+  "outputDirectory": "public",
+  "devCommand": null,
+  "installCommand": null,
+  "framework": null,
+  "regions": ["iad1"],
+  "routes": [
+    { "src": "/api/proxy", "dest": "/api/proxy.js" },
+    { "src": "/gas-shim\\.js", "dest": "/public/gas-shim.js" },
+    { "src": "/robots\\.txt", "dest": "/public/robots.txt" },
+    { "src": "/sitemap\\.xml", "dest": "/public/sitemap.xml" },
+    { "src": "/favicon-32.png", "dest": "/public/favicon-32.png" },
+    { "src": "/favicon-16.png", "dest": "/public/favicon-16.png" },
+    { "src": "/apple-touch-icon.png", "dest": "/public/apple-touch-icon.png" },
+    { "src": "/(.*)", "dest": "/public/index.html" }
+  ]
+}
