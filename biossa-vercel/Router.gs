@@ -1,4 +1,4 @@
-var PROXY_SHARED_SECRET_ = "108785acf8172ca1acb1324af722507926b14160ab56f03c18bc6e3d6d811127";
+var PROXY_SHARED_SECRET_ = "xK9mP2vQ8rT4wN7zJ1fL5hG3sD6cY0bA";
 
 // --------------------------------------------------------------------------
 // Section A: APPLICATION LIFECYCLE (public / applicant-facing)
