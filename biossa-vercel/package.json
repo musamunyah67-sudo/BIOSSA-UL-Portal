@@ -1,7 +1,0 @@
-{
-  "name": "biossa-ul-portal",
-  "version": "1.0.0",
-  "private": true,
-  "description": "BIOSSA-UL Digital Portal - Vercel deployment with Apps Script backend proxy",
-  "dependencies": {}
-}

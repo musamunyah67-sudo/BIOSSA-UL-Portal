@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://biossa-ul.vercel.app/sitemap.xml
-
-# Crawl-delay (optional, adjust if needed)
-# Crawl-delay: 1
