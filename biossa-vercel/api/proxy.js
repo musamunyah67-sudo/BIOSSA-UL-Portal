@@ -68,13 +68,11 @@ module.exports = async (req, res) => {
         throw new Error('Redirect without location header');
       }
 
-      // Re-issue POST to the redirect target
+      // The redirect target serves the already-computed response from
+      // the original POST — it only accepts GET, not another POST.
+      // (Re-POSTing here previously caused a 405.)
       const finalResponse = await fetch(redirectUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ fn, args, secret }),
+        method: 'GET',
       });
 
       const parsed = await safeParse(finalResponse, 'after-redirect');
