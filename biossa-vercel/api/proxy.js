@@ -28,6 +28,27 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'APPS_SCRIPT_URL not configured' });
   }
 
+  // Safely parse a fetch Response as JSON. If it isn't JSON (e.g. Apps
+  // Script/Google returned an HTML error or login page), return enough
+  // diagnostic info to see why, instead of throwing an opaque
+  // "Unexpected token '<'" error.
+  async function safeParse(response, label) {
+    const raw = await response.text();
+    try {
+      return { ok: true, data: JSON.parse(raw) };
+    } catch (e) {
+      return {
+        ok: false,
+        debug: {
+          stage: label,
+          status: response.status,
+          contentType: response.headers.get('content-type'),
+          bodyPreview: raw.slice(0, 300),
+        },
+      };
+    }
+  }
+
   try {
     // Apps Script /exec URLs have a quirk: they redirect POST to GET
     // We need to follow the redirect manually and re-issue the POST
@@ -56,7 +77,14 @@ module.exports = async (req, res) => {
         body: JSON.stringify({ fn, args, secret }),
       });
 
-      const data = await finalResponse.json();
+      const parsed = await safeParse(finalResponse, 'after-redirect');
+      if (!parsed.ok) {
+        return res.status(502).json({
+          error: 'Apps Script returned a non-JSON response after following the redirect.',
+          debug: parsed.debug,
+        });
+      }
+      const data = parsed.data;
       // Router.gs (Apps Script) always answers with HTTP 200, even for
       // application-level errors like a bad secret, a disallowed
       // function, or an exception inside the target function — it
@@ -71,7 +99,14 @@ module.exports = async (req, res) => {
     }
 
     // No redirect, return response directly
-    const data = await response.json();
+    const parsed = await safeParse(response, 'no-redirect');
+    if (!parsed.ok) {
+      return res.status(502).json({
+        error: 'Apps Script returned a non-JSON response (no redirect occurred).',
+        debug: parsed.debug,
+      });
+    }
+    const data = parsed.data;
     if (data && data.error) {
       return res.status(400).json(data);
     }
