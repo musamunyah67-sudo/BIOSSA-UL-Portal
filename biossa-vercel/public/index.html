@@ -3705,5 +3705,140 @@ window.renderProfilePhoto = renderProfilePhoto;
     </div>
   </div>
 </div>
+  <!-- BIOSSA-UL FAQ Chat Widget — self-contained, works logged-in or out -->
+  <style>
+    #biossaChatBtn {
+      position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--green, #14532d); color: #fff; border: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25); cursor: pointer;
+      font-size: 24px; display: flex; align-items: center; justify-content: center;
+    }
+    #biossaChatPanel {
+      position: fixed; bottom: 88px; right: 20px; z-index: 9999;
+      width: 320px; max-width: calc(100vw - 40px); height: 420px;
+      background: var(--white, #fff); border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3); display: none;
+      flex-direction: column; overflow: hidden; font-family: inherit;
+      border: 1px solid var(--line, #d8e3dc);
+    }
+    #biossaChatPanel.open { display: flex; }
+    #biossaChatHeader {
+      background: var(--green, #14532d); color: #fff; padding: 12px 14px;
+      font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: center;
+    }
+    #biossaChatHeader button {
+      background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; line-height: 1;
+    }
+    #biossaChatMessages {
+      flex: 1; overflow-y: auto; padding: 12px; font-size: 13px; color: var(--ink, #102018);
+    }
+    .biossaChatMsg { margin-bottom: 10px; line-height: 1.4; }
+    .biossaChatMsg.user { text-align: right; }
+    .biossaChatMsg.user span { background: var(--green-3, #dcfce7); padding: 6px 10px; border-radius: 10px 10px 2px 10px; display: inline-block; max-width: 85%; }
+    .biossaChatMsg.bot span { background: var(--bg, #f6f8f4); padding: 6px 10px; border-radius: 10px 10px 10px 2px; display: inline-block; max-width: 85%; }
+    .biossaChatMsg.bot.error span { background: #fee2e2; color: #b91c1c; }
+    #biossaChatInputRow {
+      display: flex; border-top: 1px solid var(--line, #d8e3dc); padding: 8px;
+    }
+    #biossaChatInput {
+      flex: 1; border: 1px solid var(--line, #d8e3dc); border-radius: 8px;
+      padding: 8px 10px; font-size: 13px; resize: none; font-family: inherit;
+    }
+    #biossaChatSend {
+      margin-left: 6px; background: var(--green, #14532d); color: #fff; border: none;
+      border-radius: 8px; padding: 0 14px; cursor: pointer; font-size: 13px;
+    }
+    #biossaChatSend:disabled { opacity: 0.6; cursor: default; }
+  </style>
+
+  <button id="biossaChatBtn" aria-label="Open chat" title="Ask a question">💬</button>
+  <div id="biossaChatPanel">
+    <div id="biossaChatHeader">
+      <span>BIOSSA-UL Support</span>
+      <button id="biossaChatClose" aria-label="Close chat">×</button>
+    </div>
+    <div id="biossaChatMessages"></div>
+    <div id="biossaChatInputRow">
+      <textarea id="biossaChatInput" rows="1" maxlength="600" placeholder="Ask about membership, applications..."></textarea>
+      <button id="biossaChatSend">Send</button>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var history = [];
+    var btn = document.getElementById('biossaChatBtn');
+    var panel = document.getElementById('biossaChatPanel');
+    var closeBtn = document.getElementById('biossaChatClose');
+    var messagesEl = document.getElementById('biossaChatMessages');
+    var input = document.getElementById('biossaChatInput');
+    var sendBtn = document.getElementById('biossaChatSend');
+
+    function addMessage(text, role, isError) {
+      var row = document.createElement('div');
+      row.className = 'biossaChatMsg ' + (role === 'user' ? 'user' : 'bot') + (isError ? ' error' : '');
+      var span = document.createElement('span');
+      span.textContent = text;
+      row.appendChild(span);
+      messagesEl.appendChild(row);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function greet() {
+      if (messagesEl.children.length === 0) {
+        addMessage("Hi! I can answer questions about BIOSSA-UL membership and applications. What would you like to know?", 'bot');
+      }
+    }
+
+    btn.addEventListener('click', function () {
+      panel.classList.toggle('open');
+      if (panel.classList.contains('open')) {
+        greet();
+        input.focus();
+      }
+    });
+    closeBtn.addEventListener('click', function () {
+      panel.classList.remove('open');
+    });
+
+    async function send() {
+      var text = input.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      input.value = '';
+      sendBtn.disabled = true;
+
+      try {
+        var resp = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, history: history }),
+        });
+        var data = await resp.json();
+        if (!resp.ok || data.error) {
+          addMessage(data.error || 'Something went wrong. Please try again.', 'bot', true);
+        } else {
+          addMessage(data.reply, 'bot');
+          history.push({ role: 'user', text: text });
+          history.push({ role: 'model', text: data.reply });
+        }
+      } catch (err) {
+        addMessage('Network error — please check your connection and try again.', 'bot', true);
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    sendBtn.addEventListener('click', send);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        send();
+      }
+    });
+  })();
+  </script>
+
 </body>
 </html>
