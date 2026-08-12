@@ -8,12 +8,14 @@ var FAQ_LINES = [
   '- Motto: "...Passion for Life, Compassion for Recipient."',
   '- Digital initiative: BIOSSA GOES DIGITAL - an initiative to modernize BIOSSA-UL\'s student services through digital tools, online forms, databases, student identification, academic/support services, and a centralized digital portal.',
   '- Portal purpose: The BIOSSA-UL Digital Portal provides students and applicants with access to BIOSSA-UL\'s digital services and information.',
-  '- How to apply: Applicants should follow the application process provided through the BIOSSA-UL Digital Portal. The exact invite-token/application procedure is not included in this chatbot\'s knowledge base.',
-  '- Membership fee: Not specified in the chatbot\'s current knowledge base. Do not guess the amount or payment method.',
-  '- Application deadline: Not specified in the chatbot\'s current knowledge base. Do not guess a date or deadline.',
+  '- How to apply: Applicants complete the official BIOSSA-UL application form at https://docs.google.com/forms/d/e/1FAIpQLSd6hAg_NSUAPJvhJmFGYzLkeUd_1tDYaT312LueOJ2_N7RCEw/viewform',
+  '- Access token requirement: An application is NOT valid without a valid access token. Applicants must enter their token in the "Access Token" field on the form, or the application will not be considered valid.',
+  '- Application deadline: Applications are always open. There is currently no fixed application deadline.',
+  '- Membership fee: Not specified here - applicants should contact BIOSSA-UL directly for the applicable fee and payment instructions (see contact info below). Do not guess an amount.',
   '- Where to check application status: On the BIOSSA-UL Digital Portal, under "Check Status" (portalCheckStatus).',
-  '- Account/application information: The chatbot cannot access individual applicant or member records, application details, passwords, tokens, or account information.',
-  '- Support: For questions not covered by this FAQ, direct the user to the official BIOSSA-UL support/contact channel provided on the portal.',
+  '- Applicant support / contact: Facebook page https://web.facebook.com/biossa.ul.2025 or WhatsApp +231775965219',
+  '- Account/application information: The chatbot cannot access individual applicant or member records, application details, passwords, tokens, or account information. It also does not know or issue access tokens - direct token questions to the contact channels above.',
+  '- Support: For anything not covered by this FAQ, direct the user to the Facebook page or WhatsApp number above.',
 ];
 var FAQ_CONTEXT = FAQ_LINES.join('\n');
 
