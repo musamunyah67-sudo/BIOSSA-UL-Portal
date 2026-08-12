@@ -1,6 +1,7 @@
-const MODEL = 'gemini-2.5-flash-lite';
+const MODEL = 'gemini-3.5-flash-lite';
 const MAX_MESSAGE_LENGTH = 600;
 const MAX_HISTORY_TURNS = 6; // last N exchanges, to keep requests small
+
 var FAQ_LINES = [
   '- Organization: Biological Sciences Students Association, University of Liberia (BIOSSA-UL)',
   '- What BIOSSA-UL is: A student association representing students of Biological Sciences at the University of Liberia.',
@@ -87,7 +88,6 @@ module.exports = async (req, res) => {
           contents,
           generationConfig: {
             maxOutputTokens: 300,
-            temperature: 0.4,
           },
         }),
       }
